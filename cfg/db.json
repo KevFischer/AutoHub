@@ -1,0 +1,8 @@
+{
+  "server": "mysql+pymysql",
+  "user": "root",
+  "password": "9870",
+  "host": "localhost",
+  "port": "3306",
+  "database": "autohub"
+}
