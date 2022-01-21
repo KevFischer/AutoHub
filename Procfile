@@ -1,1 +1,1 @@
-web: uvicorn main:app -port 
+web: uvicorn main:app --port 
