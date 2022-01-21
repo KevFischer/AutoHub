@@ -36,3 +36,10 @@ app.include_router(
     prefix="/offer",
     tags=["Offer-Router"]
 )
+
+
+app.include_router(
+    router=event.router,
+    prefix="/event",
+    tags=["Event-Router"]
+)
