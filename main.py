@@ -58,8 +58,16 @@ app.include_router(
     tags=["Login-Router"]
 )
 
+
 app.include_router(
     router=logout.router,
     prefix="/logout",
     tags=["Logout-Router"]
+)
+
+
+app.include_router(
+    router=forum.router,
+    prefix="/forum",
+    tags=["Forum-Router"]
 )
