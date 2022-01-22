@@ -71,3 +71,10 @@ app.include_router(
     prefix="/forum",
     tags=["Forum-Router"]
 )
+
+
+app.include_router(
+    router=message.router,
+    prefix="/message",
+    tags=["Message-Router"]
+)
