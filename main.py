@@ -43,3 +43,23 @@ app.include_router(
     prefix="/event",
     tags=["Event-Router"]
 )
+
+
+app.include_router(
+    router=register.router,
+    prefix="/register",
+    tags=["Register-Router"]
+)
+
+
+app.include_router(
+    router=login.router,
+    prefix="/login",
+    tags=["Login-Router"]
+)
+
+app.include_router(
+    router=logout.router,
+    prefix="/logout",
+    tags=["Logout-Router"]
+)

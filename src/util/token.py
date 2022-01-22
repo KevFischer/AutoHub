@@ -48,3 +48,13 @@ def read_token(token: str, db: Session):
     if db.query(Token).filter(Token.token == token).first() is None:
         raise HTTPException(status_code=404)
     return db.query(Token.account).filter(Token.token == token).first()[0]
+
+
+def delete_token(token: str, db: Session):
+    """
+    Delete a given token from the db so it's not longer valid
+    :param token: Token to delete
+    :param db: DB to interact with
+    """
+    db.execute("DELETE FROM token WHERE token = '" + token + "'")
+    db.commit()
