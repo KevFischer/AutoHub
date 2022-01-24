@@ -14,6 +14,7 @@ async def upload_post(id: int, file: UploadFile = File(...)):
     content = await file.read()
     filename = str(uuid4()) + os.path.splitext(file.filename)[1]
     if file.content_type.split("/")[0] == "image":
+        print(f"{directory}/" + filename)
         with open(f"{directory}/" + filename, "wb") as f:
             f.write(content)
         return {"filename": filename}
