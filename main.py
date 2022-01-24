@@ -78,3 +78,10 @@ app.include_router(
     prefix="/message",
     tags=["Message-Router"]
 )
+
+
+app.include_router(
+    router=image.router,
+    prefix="/image",
+    tags=["Image-Router"]
+)

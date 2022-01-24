@@ -1,7 +1,6 @@
-from sqlalchemy.orm.session import Session
 from fastapi import *
 from ..util.database import init_db
-from ..util.token import *
+from src.util.token import *
 
 
 router = APIRouter()

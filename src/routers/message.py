@@ -1,22 +1,26 @@
-from sqlalchemy.orm.session import Session
 from fastapi import *
 from typing import List
 import pusher
-from ..util.token import *
+from src.util.token import *
 from ..util.database import init_db
 from ..schemas.message import *
 from ..models.message import Message
 
 
 router = APIRouter()
+CONFIG = "cfg/pusher.json"
+
+
+with open(CONFIG) as f:
+    data = json.load(f)
 
 
 pusher_client = pusher.Pusher(
-  app_id='1319525',
-  key='7a75669860f524300d4e',
-  secret='10c1429990845dd0a750',
-  cluster='eu',
-  ssl=True
+  app_id=data["app_id"],
+  key=data["key"],
+  secret=data["secret"],
+  cluster=data["cluster"],
+  ssl=bool(data["ssl"])
 )
 
 

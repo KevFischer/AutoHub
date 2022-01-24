@@ -2,14 +2,10 @@
 Router object and all necessary routes
 for account objects.
 """
-from sqlalchemy.orm.session import Session
 from fastapi import *
-from ..util.password import encrypt
 from ..util.database import init_db
-from ..util.token import *
+from src.util.token import *
 from ..models.account import Account
-from ..schemas.account import *
-
 
 router = APIRouter()
 

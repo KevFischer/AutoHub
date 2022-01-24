@@ -1,13 +1,9 @@
-from sqlalchemy.orm.session import Session
 from fastapi import *
 from typing import List
-from ..util.token import *
+from src.util.token import *
 from ..util.database import init_db
 from ..models.event import Event, AccountEvent
-from ..models.account import Account
 from ..schemas.event import *
-from ..schemas.account import RespondAccount
-
 
 router = APIRouter()
 
