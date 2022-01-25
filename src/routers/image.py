@@ -1,22 +1,53 @@
 from fastapi import *
-from sqlalchemy.orm.session import Session
-from ..util.database import init_db
-from uuid import uuid4
-import os
+from typing import List
+from sqlalchemy.orm import *
+from src.models.image import OfferImages
+from src.models.offer import Offer
+from src.util.token import read_token
+from src.util.database import init_db
+from src.schemas.image import RespondImage
+from cloudinary import CloudinaryImage
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+import json
 
 
 router = APIRouter()
+CONFIG = "cfg/cloudinary.json"
+
+
+with open(CONFIG) as f:
+    data = json.load(f)
+cloudinary.config(
+    cloud_name=data["cloud_name"],
+    api_key=data["api_key"],
+    api_secret=data["api_secret"]
+)
+
+
+@router.get("/{id}",response_model=List[RespondImage])
+def get_images(id:int, db: Session = Depends(init_db)):
+    return db.query(OfferImages.url).filter(OfferImages.offer == id).all()
+
+
+@router.get("/thumbnail/{id}")
+def get_images(id:int, db: Session = Depends(init_db)):
+    return db.query(OfferImages.url).filter(OfferImages.offer == id).first()
 
 
 @router.post("/{id}")
-async def upload_post(id: int, file: UploadFile = File(...)):
-    print(file.file)
-    directory = "files/"
-    content = await file.read()
-    filename = str(uuid4()) + os.path.splitext(file.filename)[1]
-    if file.content_type.split("/")[0] == "image":
-        print(f"{directory}" + filename)
-        with open(f"{directory}" + filename, "wb") as f:
-            f.write(content)
-        return {"filename": filename}
-    raise HTTPException(status_code=422)
+async def upload_post(id: int, token:str = Header(None), file: UploadFile = File(...), db: Session = Depends(init_db)):
+    if read_token(token, db) is None:
+        raise HTTPException(status_code=401)
+    if file.content_type.split("/")[0] != "image":
+        raise HTTPException(status_code=422)
+    if db.query(Offer).filter(Offer.offerID == id).first() is None:
+        raise HTTPException(status_code=404)
+    url = cloudinary.uploader.upload(file.file)["url"]
+    new_image = OfferImages(
+        offer=id,
+        url=url
+    )
+    db.add(new_image)
+    db.commit()
