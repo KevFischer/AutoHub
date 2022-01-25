@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post("/{id}")
 async def upload_post(id: int, file: UploadFile = File(...)):
-    print(file)
+    print(file.file)
     directory = "files/"
     content = await file.read()
     filename = str(uuid4()) + os.path.splitext(file.filename)[1]
