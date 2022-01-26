@@ -6,7 +6,6 @@ from src.models.offer import Offer
 from src.util.token import read_token
 from src.util.database import init_db
 from src.schemas.image import RespondImage
-from cloudinary import CloudinaryImage
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
