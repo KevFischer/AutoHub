@@ -31,6 +31,7 @@ class RespondOffer(BaseModel):
     location: str
     roadworthy: str
     description: Optional[str]
+    ownership: Optional[bool]
 
     class Config:
         orm_mode = True

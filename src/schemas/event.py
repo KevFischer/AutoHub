@@ -8,6 +8,7 @@ class RequestEvent(BaseModel):
     location: str
     appointment: Optional[datetime]
     maxAttendants: Optional[int]
+    description: Optional[str]
 
     class Config:
         orm_mode = True
@@ -20,6 +21,8 @@ class RespondEvent(BaseModel):
     location: str
     appointment: Optional[datetime]
     maxAttendants: Optional[int]
+    description: Optional[str]
+    ownership: Optional[bool]
 
     class Config:
         orm_mode = True

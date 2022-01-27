@@ -45,8 +45,11 @@ def read_token(token: str, db: Session):
     :param db: Database to interact with
     :return: Account from token
     """
+    if db.query(Token).filter(Token.expire >= datetime.now()).all() is not None:
+        db.execute("DELETE FROM token WHERE expire <= STR_TO_DATE('" + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + "', '%Y-%m-%d %H:%i:%s')")
+        db.commit()
     if db.query(Token).filter(Token.token == token).first() is None:
-        raise HTTPException(status_code=404)
+        return None
     return db.query(Token.account).filter(Token.token == token).first()[0]
 
 

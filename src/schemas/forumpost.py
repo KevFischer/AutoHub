@@ -1,4 +1,5 @@
 from pydantic import *
+from typing import Optional
 from datetime import datetime
 
 
@@ -16,6 +17,7 @@ class RespondPost(BaseModel):
     postedAt: datetime
     topic: str
     content: str
+    ownership: Optional[bool]
 
     class Config:
         orm_mode = True

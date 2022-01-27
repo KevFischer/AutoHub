@@ -17,6 +17,7 @@ class RespondAnswer(BaseModel):
     postedAt: datetime
     content: str
     upvotes: Optional[int]
+    ownership: Optional[bool]
 
     class Config:
         orm_mode = True

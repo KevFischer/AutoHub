@@ -1,9 +1,12 @@
+"""
+Router class for offers, providing all features needed to create, view, join and delete offers
+"""
 from fastapi import *
 from typing import List
 from src.util.token import *
-from ..util.database import init_db
-from ..models.offer import Offer
-from ..schemas.offer import *
+from src.util.database import init_db
+from src.models.offer import Offer
+from src.schemas.offer import *
 
 
 router = APIRouter()
@@ -11,16 +14,59 @@ router = APIRouter()
 
 @router.get("/", response_model=List[RespondOffer])
 def get_all(db: Session = Depends(init_db)):
+    """
+    Get all offers from DB
+    :param db: DB to browse
+    :return: List of offer objects
+    """
     return db.query(Offer).all()
 
 
 @router.get("/{id}", response_model=RespondOffer)
-def get_by_id(id: int, db: Session = Depends(init_db)):
-    return db.query(Offer).filter(Offer.offerID == id).first()
+def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)):
+    """
+    Get an offer identified by unique ID
+    :param id: ID of the offer
+    :param token: Token to identify user
+    :param db: DB to browse
+    :return: Offer object if matching
+    """
+    if db.query(Offer).filter(Offer.offerID == id).first() is None:
+        raise HTTPException(status_code=404)
+    ownership = False
+    data = db.query(Offer).filter(Offer.offerID == id).first()
+    if token is not None:
+        user = read_token(token, db)
+        if data.account == user:
+            ownership = True
+    response = RespondOffer(
+        offerID=data.offerID,
+        account=data.account,
+        brand=data.brand,
+        model=data.model,
+        price=data.price,
+        dateAdded=data.dateAdded,
+        firstRegistration=data.firstRegistration,
+        mileage=data.mileage,
+        fuelType=data.fuelType,
+        location=data.location,
+        roadworthy=data.roadworthy,
+        description=data.description,
+        ownership=ownership
+    )
+    return response
+
 
 
 @router.post("/")
 def add_offer(request: RequestOffer, token: str = Header(None), db: Session = Depends(init_db)):
+    """
+    Add an offer to database
+    :param request: Request body with values to create offer
+    :param token: Token to identify user
+    :param db: DB to browse
+    :return: OK if success
+    """
     new_offer = Offer(
         account=read_token(token,db),
         brand=request.brand,
@@ -35,14 +81,27 @@ def add_offer(request: RequestOffer, token: str = Header(None), db: Session = De
     )
     db.add(new_offer)
     db.commit()
+    return {"response": "ok"}
 
 
 @router.delete("/{id}")
-def delete_offer(id: int, db: Session = Depends(init_db)):
+def delete_offer(id: int, token: str = Header(None), db: Session = Depends(init_db)):
+    """
+    Delete an offer if its matching to the token
+    :param id: ID of the offer
+    :param token: Token to identify user
+    :param db: DB to browse
+    :return: OK if success
+    """
+    if db.query(Offer).filter(Offer.offerID == id).first() is None:
+        raise HTTPException(status_code=404)
+    if db.query(Offer).filter(Offer.offerID == id).first().account != read_token(token, db):
+        raise HTTPException(status_code=401)
     db.execute("DELETE FROM message WHERE offer = " + str(id))
     db.commit()
     db.execute("DELETE FROM offer WHERE offerID = " + str(id))
     db.commit()
+    return {"response": "ok"}
 
 
 @router.get("/search/", response_model=List[RespondOffer])
@@ -51,6 +110,22 @@ def search_offer(db: Session = Depends(init_db), min_price: Optional[int] = None
                  min_first_registration: Optional[datetime] = None, max_first_registration: Optional[datetime] = None,\
                  min_mileage: Optional[int] = None, max_mileage: Optional[int] = None, fuel_type: Optional[str] = None,\
                  location: Optional[str] = None, roadworthy: Optional[str] = None):
+    """
+    Generate and execute a search string on a given DB.
+    :param db: DB to search Items
+    :param min_price: Lowest price the Item searched can have
+    :param max_price: Highest price the Item searched can have
+    :param brand: Brand of the searched Item
+    :param model: Model of the searched Item
+    :param min_first_registration: Oldest possible first registration
+    :param max_first_registration: Youngest possible first registration
+    :param min_mileage: Lowest mileage of an Item
+    :param max_mileage: Highest mileage of an Item
+    :param fuel_type: Fuel type of the vehicle
+    :param location: Location where the Item is located
+    :param roadworthy: Roadworthy
+    :return: Result set matching the query parametes
+    """
     default_str = "SELECT * FROM offer WHERE"
     query_str = default_str
     if min_price is not None:

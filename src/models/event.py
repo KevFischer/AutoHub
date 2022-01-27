@@ -18,6 +18,7 @@ class Event(Base):
     location = Column(String(255))
     appointment = Column(DateTime)
     maxAttendants = Column(Integer)
+    description = Column(String(512))
 
     event_account_idx = relationship("Account", foreign_keys="Event.creator")
 
