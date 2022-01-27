@@ -1,10 +1,13 @@
+"""
+Message routes using the pusher library
+"""
 from fastapi import *
 from typing import List
 import pusher
 from src.util.token import *
-from ..util.database import init_db
-from ..schemas.message import *
-from ..models.message import Message
+from src.util.database import init_db
+from src.schemas.message import *
+from src.models.message import Message
 
 
 router = APIRouter()
@@ -26,6 +29,13 @@ pusher_client = pusher.Pusher(
 
 @router.post("/")
 async def push(request: RequestMessage, db: Session = Depends(init_db), token: str = Header(None)):
+    """
+    Setup pusher client
+    :param request: Request body of the message
+    :param db: DB to browse
+    :param token: Token to identify user
+    :return: No respons, due to pusher mechanics
+    """
     new_message = Message(
         sender=read_token(token, db),
         offer=request.offer,
@@ -47,6 +57,13 @@ async def push(request: RequestMessage, db: Session = Depends(init_db), token: s
 
 @router.get("/", response_model=List[RespondMessage])
 async def setup(receiver: str, db: Session = Depends(init_db), token: str = Header(None)):
+    """
+    Get chat history
+    :param receiver: Receiver of the messages
+    :param db: DB to browse
+    :param token: Token to identify user
+    :return: Return List of all messages between 2 persons.
+    """
     query_str = "SELECT * FROM message WHERE "\
         "(sender LIKE '" + read_token(token, db) + "' AND receiver LIKE '" + receiver + "') "\
         "OR (sender LIKE '" + receiver + "' AND receiver LIKE '" + read_token(token, db) + "')"

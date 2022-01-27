@@ -1,9 +1,12 @@
+"""
+Register route to create new account
+"""
 from fastapi import *
-from ..util.password import encrypt
-from ..util.database import init_db
+from src.util.password import encrypt
+from src.util.database import init_db
 from src.util.token import *
-from ..models.account import Account
-from ..schemas.account import *
+from src.models.account import Account
+from src.schemas.account import *
 
 
 router = APIRouter()
@@ -32,3 +35,4 @@ def register(request: RequestRegister, db: Session = Depends(init_db)):
     # Finally, add the new account to the database and commit the changes.
     db.add(new_account)
     db.commit()
+    return {"response": "ok"}
