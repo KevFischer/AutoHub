@@ -167,3 +167,14 @@ def delete_answer(id: int, token: str = Header(None), db: Session = Depends(init
     db.execute("DELETE FROM forumpostanswer WHERE answerID = " + str(id))
     db.commit()
     return {"response": "ok"}
+
+
+@router.get("/search/", response_model=List[RespondPost])
+def search_post(search_str: Optional[str] = None, db: Session = Depends(init_db)):
+    """
+    Search for a string in topic column \n
+    :param search_str: String to search in topic \n
+    :param db: DB to browse \n
+    :return: List of matching posts
+    """
+    return db.execute("SELECT * FROM forumpost WHERE topic LIKE '%" + search_str + "%'").all()

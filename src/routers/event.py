@@ -131,3 +131,29 @@ def delete_event(id: int, token: str = Header(None), db: Session = Depends(init_
     db.execute("DELETE FROM event WHERE eventID = " + str(id))
     db.commit()
     return {"response": "ok"}
+
+
+@router.get("/search/")
+def search_event(search_str: Optional[str] = None, location: Optional[str] = None, db: Session = Depends(init_db)):
+    """
+    Search an event. \n
+    :param search_str: String contained in either Topic or description \n
+    :param location: Location of the event \n
+    :param db: DB to browse \n
+    :return: List of matching events
+    """
+    if search_str is None and location is None:
+        return db.query(Event).all()
+    default_str = ("SELECT * FROM event WHERE")
+    query_str = default_str
+    if search_str != None:
+        if query_str != default_str:
+            query_str += " AND"
+        query_str += f" (eventname LIKE '%{search_str}%'"
+        query_str += f" OR description LIKE '%{search_str}%')"
+    if location != None:
+        if query_str != default_str:
+            query_str += " AND"
+        query_str += f" (location LIKE '%{location}%')"
+    query_str += ";"
+    return db.execute(query_str).all()
