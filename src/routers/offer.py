@@ -65,6 +65,8 @@ def add_offer(request: RequestOffer, token: str = Header(None), db: Session = De
     :param db: DB to browse \n
     :return: OK if success
     """
+    if request.roadworthy.lower() != "fahrtauglich" and request.roadworthy.lower() != "nicht fahrtauglich":
+        raise HTTPException(status_code=422)
     new_offer = Offer(
         account=read_token(token, db),
         brand=request.brand,
