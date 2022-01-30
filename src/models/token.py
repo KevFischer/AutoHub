@@ -10,7 +10,7 @@ class Token(Base):
     __tablename__ = "token"
 
     token = Column(String(512), unique=True, primary_key=True, index=True, )
-    account = Column(String(255), ForeignKey("account.email"), primary_key=True)
+    account = Column(String(128), ForeignKey("account.email"), primary_key=True)
     expire = Column(DateTime)
 
     email_idx = relationship("Account", foreign_keys="Token.account")

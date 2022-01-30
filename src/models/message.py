@@ -14,8 +14,8 @@ class Message(Base):
     __tablename__ = "message"
 
     messageID = Column(Integer, unique=True, primary_key=True, index=True, autoincrement=True)
-    sender = Column(String(255), ForeignKey("account.email"), primary_key=True)
-    receiver = Column(String(255), ForeignKey("account.email"), primary_key=True)
+    sender = Column(String(128), ForeignKey("account.email"), primary_key=True)
+    receiver = Column(String(128), ForeignKey("account.email"), primary_key=True)
     offer = Column(Integer, ForeignKey("offer.offerID"), primary_key=True)
     testDrive = Column(DateTime, default=now())
     content = Column(String(512))

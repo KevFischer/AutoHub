@@ -15,9 +15,9 @@ class Forumpostanswer(Base):
 
     answerID = Column(Integer, unique=True, primary_key=True, index=True, autoincrement=True)
     post = Column(Integer, ForeignKey("forumpost.postID"), primary_key=True)
-    account = Column(String(255), ForeignKey("account.email"), primary_key=True)
+    account = Column(String(128), ForeignKey("account.email"), primary_key=True)
     postedAt = Column(DateTime, default=now())
-    content = Column(String(512))
+    content = Column(String(1024))
     upvotes = Column(Integer, default=0)
 
     answer_post_idx = relationship("Forumpost", foreign_keys="Forumpostanswer.post")

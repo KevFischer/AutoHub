@@ -13,9 +13,9 @@ class Event(Base):
     __tablename__ = "event"
 
     eventID = Column(Integer, unique=True, primary_key=True, index=True, autoincrement=True)
-    creator = Column(String(255), ForeignKey("account.email"), primary_key=True)
-    eventname = Column(String(255))
-    location = Column(String(255))
+    creator = Column(String(128), ForeignKey("account.email"), primary_key=True)
+    eventname = Column(String(64))
+    location = Column(String(128))
     appointment = Column(DateTime)
     maxAttendants = Column(Integer)
     description = Column(String(512))

@@ -14,9 +14,9 @@ class Forumpost(Base):
     __tablename__ = "forumpost"
 
     postID = Column(Integer, unique=True, primary_key=True, index=True, autoincrement=True)
-    account = Column(String(255), ForeignKey("account.email"), primary_key=True)
+    account = Column(String(128), ForeignKey("account.email"), primary_key=True)
     postedAt = Column(DateTime, default=now())
-    topic = Column(String(255))
+    topic = Column(String(64))
     content = Column(String(1024))
 
     post_account_idx = relationship("Account", foreign_keys="Forumpost.account")
