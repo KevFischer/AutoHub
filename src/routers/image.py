@@ -9,6 +9,7 @@ from src.models.offer import Offer
 from src.util.token import read_token
 from src.util.database import init_db
 from src.schemas.image import RespondImage
+from src.models.account import Account
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -55,7 +56,7 @@ def get_images(id: int, db: Session = Depends(init_db)):
 
 
 @router.post("/{id}")
-async def upload_post(id: int, token:str = Header(None), file: UploadFile = File(...), db: Session = Depends(init_db)):
+async def upload_post(id: int, token: str = Header(None), file: UploadFile = File(...), db: Session = Depends(init_db)):
     """
     Upload an image for an offer \n
     :param id: ID of the offer \n
@@ -78,5 +79,25 @@ async def upload_post(id: int, token:str = Header(None), file: UploadFile = File
         url=url
     )
     db.add(new_image)
+    db.commit()
+    return {"response": "ok"}
+
+
+@router.patch("/profile/")
+def add_profile_pic(token: str = Header(None), file: UploadFile = File(...), db: Session = Depends(init_db)):
+    """
+    Update image_url column in DB with a picture. \n
+    :param token: Token of the user to update \n
+    :param file: File to upload \n
+    :param db: DB to browse \n
+    :return: OK if success
+    """
+    user = read_token(token, db)
+    if user is None:
+        raise HTTPException(status_code=401)
+    if file.content_type.split("/")[0] != "image":
+        raise HTTPException(status_code=422)
+    url = cloudinary.uploader.upload(file.file)["url"]
+    db.execute("UPDATE account SET image_url = '" + url + "' WHERE email LIKE '" + user + "'")
     db.commit()
     return {"response": "ok"}

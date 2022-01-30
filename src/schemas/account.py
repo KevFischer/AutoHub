@@ -2,6 +2,7 @@
 JSON Body formats for requests and responses.
 """
 from pydantic import *
+from typing import Optional
 from datetime import datetime
 
 
@@ -40,6 +41,7 @@ class RespondAccount(BaseModel):
     phone: str
     password: str
     member_since: datetime
+    image_url: Optional[str]
 
     class Config:
         orm_mode = True

@@ -17,3 +17,4 @@ class Account(Base):
     password = Column(String(255))
     phone = Column(String(255))
     member_since = Column(DateTime, default=now())
+    image_url = Column(String(512), default="https://res.cloudinary.com/autohubstorage/image/upload/v1643560393/blank-profile-picture-973460_960_720_dmzcen.webp")
