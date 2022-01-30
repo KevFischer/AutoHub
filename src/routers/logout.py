@@ -12,9 +12,9 @@ router = APIRouter()
 @router.post("/")
 def logout(token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Delete token so no one can access account by accident
-    :param token: Token to delete
-    :param db: DB to browse
+    Delete token so no one can access account by accident \n
+    :param token: Token to delete \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     delete_token(token, db)

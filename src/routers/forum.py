@@ -18,8 +18,8 @@ router = APIRouter()
 @router.get("/", response_model=List[RespondPost])
 def get_all(db: Session = Depends(init_db)):
     """
-    Get a list of all form posts
-    :param db: DB to browse
+    Get a list of all form posts \n
+    :param db: DB to browse \n
     :return: List of all posts from DB
     """
     return db.query(Forumpost).all()
@@ -28,10 +28,10 @@ def get_all(db: Session = Depends(init_db)):
 @router.get("/{id}", response_model=RespondPost)
 def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Get a specific ForumPost identified by ID
-    :param id: Id to identify post
-    :param token: Token to identify user
-    :param db: DB to browse
+    Get a specific ForumPost identified by ID \n
+    :param id: Id to identify post \n
+    :param token: Token to identify user \n
+    :param db: DB to browse \n
     :return: Matching forumpost object
     """
     if db.query(Forumpost).filter(Forumpost.postID == id).first() is None:
@@ -56,10 +56,10 @@ def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)
 @router.post("/")
 def add_post(request: RequestPost, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Add a post to the DB
-    :param request: Request body with all values to create Post oject
-    :param token: Token to identify user
-    :param db: DB to browse
+    Add a post to the DB \n
+    :param request: Request body with all values to create Post onject \n
+    :param token: Token to identify user \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     if read_token(token, db) is None:
@@ -77,10 +77,10 @@ def add_post(request: RequestPost, token: str = Header(None), db: Session = Depe
 @router.delete("/{id}")
 def delete_post(id:int, token:str = Header(None), db: Session = Depends(init_db)):
     """
-    Delete a complete forum posts with all its answers of owned by token owner
-    :param id: ID to identify ForumPost
-    :param token: Token to identify user
-    :param db: DB to browse
+    Delete a complete forum posts with all its answers of owned by token owner \n
+    :param id: ID to identify ForumPost \n
+    :param token: Token to identify user \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     if read_token(token, db) is None:
@@ -99,9 +99,9 @@ def delete_post(id:int, token:str = Header(None), db: Session = Depends(init_db)
 @router.get("/answers/{id}", response_model=List[RespondAnswer])
 def get_answers(id: int, db: Session = Depends(init_db)):
     """
-    Get a list of all answeres from a specific ForumPost
-    :param id: ID of the ForumPost
-    :param db: DB to browse
+    Get a list of all answeres from a specific ForumPost \n
+    :param id: ID of the ForumPost \n
+    :param db: DB to browse \n
     :return: List of Answers
     """
     if db.query(Forumpost).filter(Forumpost.postID == id).first() is None:
@@ -112,11 +112,11 @@ def get_answers(id: int, db: Session = Depends(init_db)):
 @router.post("/answer/{id}")
 def answer_post(request: RequestAnswer, id: int, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Answer to a forum post
-    :param request: Request body with values for the answer object
-    :param id: ID of the post
-    :param token: Token to identify user
-    :param db: DB to browse
+    Answer to a forum post \n
+    :param request: Request body with values for the answer object \n
+    :param id: ID of the post \n
+    :param token: Token to identify user \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     if read_token(token, db) is None:
@@ -136,10 +136,10 @@ def answer_post(request: RequestAnswer, id: int, token: str = Header(None), db: 
 @router.patch("/answer/upvote/{id}")
 def upvote_answer(id:int, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Increment upvote column of ForumPostAnswer
-    :param id: ID of the answer
-    :param token: Token to identify user
-    :param db: DB to Browse
+    Increment upvote column of ForumPostAnswer \n
+    :param id: ID of the answer \n
+    :param token: Token to identify user \n
+    :param db: DB to Browse \n
     :return: OK if success
     """
     if read_token(token, db) is None:
@@ -154,10 +154,10 @@ def upvote_answer(id:int, token: str = Header(None), db: Session = Depends(init_
 @router.delete("/answer/{id}")
 def delete_answer(id: int, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Delete a specific answer.
-    :param id: ID of the answer
-    :param token: Token to identify user
-    :param db: DB to browse
+    Delete a specific answer. \n
+    :param id: ID of the answer \n
+    :param token: Token to identify user \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     if read_token(token, db) is None:

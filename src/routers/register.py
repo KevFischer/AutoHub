@@ -15,8 +15,8 @@ router = APIRouter()
 @router.post("/")
 def register(request: RequestRegister, db: Session = Depends(init_db)):
     """
-    Register function to register a new Account entity to the database.
-    :param request: Request Body received by Frontend application
+    Register function to register a new Account entity to the database. \n
+    :param request: Request Body received by Frontend application \n
     :param db: Database to interact with
     """
     # Check if mandatory columns are available.

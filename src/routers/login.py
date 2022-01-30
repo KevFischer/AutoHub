@@ -15,9 +15,9 @@ router = APIRouter()
 @router.post("/", response_model=RespondLogin)
 def login(request: RequestLogin, db: Session = Depends(init_db)):
     """
-    Function to log in into an account.
-    :param request: Login request body
-    :param db: Database to interact with
+    Function to log in into an account. \n
+    :param request: Login request body \n
+    :param db: Database to interact with \n
     :return: JWT token for user privileges
     """
     if db.query(Account).filter(Account.email == request.email).\

@@ -14,8 +14,8 @@ router = APIRouter()
 @router.get("/", response_model=List[RespondOffer])
 def get_all(db: Session = Depends(init_db)):
     """
-    Get all offers from DB
-    :param db: DB to browse
+    Get all offers from DB. \n
+    :param db: DB to browse \n
     :return: List of offer objects
     """
     return db.query(Offer).all()
@@ -24,10 +24,10 @@ def get_all(db: Session = Depends(init_db)):
 @router.get("/{id}", response_model=RespondOffer)
 def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Get an offer identified by unique ID
-    :param id: ID of the offer
-    :param token: Token to identify user
-    :param db: DB to browse
+    Get an offer identified by unique ID. \n
+    :param id: ID of the offer \n
+    :param token: Token to identify user \n
+    :param db: DB to browse \n
     :return: Offer object if matching
     """
     if db.query(Offer).filter(Offer.offerID == id).first() is None:
@@ -59,10 +59,10 @@ def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)
 @router.post("/")
 def add_offer(request: RequestOffer, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Add an offer to database
-    :param request: Request body with values to create offer
-    :param token: Token to identify user
-    :param db: DB to browse
+    Add an offer to database. \n
+    :param request: Request body with values to create offer \n
+    :param token: Token to identify user \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     new_offer = Offer(
@@ -85,10 +85,10 @@ def add_offer(request: RequestOffer, token: str = Header(None), db: Session = De
 @router.delete("/{id}")
 def delete_offer(id: int, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Delete an offer if its matching to the token
-    :param id: ID of the offer
-    :param token: Token to identify user
-    :param db: DB to browse
+    Delete an offer if its matching to the token. \n
+    :param id: ID of the offer \n
+    :param token: Token to identify user \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     if db.query(Offer).filter(Offer.offerID == id).first() is None:
@@ -109,19 +109,19 @@ def search_offer(db: Session = Depends(init_db), min_price: Optional[int] = None
                  min_mileage: Optional[int] = None, max_mileage: Optional[int] = None, fuel_type: Optional[str] = None, \
                  location: Optional[str] = None, roadworthy: Optional[str] = None):
     """
-    Generate and execute a search string on a given DB.
-    :param db: DB to search Items
-    :param min_price: Lowest price the Item searched can have
-    :param max_price: Highest price the Item searched can have
-    :param brand: Brand of the searched Item
-    :param model: Model of the searched Item
-    :param min_first_registration: Oldest possible first registration
-    :param max_first_registration: Youngest possible first registration
-    :param min_mileage: Lowest mileage of an Item
-    :param max_mileage: Highest mileage of an Item
-    :param fuel_type: Fuel type of the vehicle
-    :param location: Location where the Item is located
-    :param roadworthy: Roadworthy
+    Generate and execute a search string on a given DB. \n
+    :param db: DB to search Items \n
+    :param min_price: Lowest price the Item searched can have \n
+    :param max_price: Highest price the Item searched can have \n
+    :param brand: Brand of the searched Item \n
+    :param model: Model of the searched Item \n
+    :param min_first_registration: Oldest possible first registration \n
+    :param max_first_registration: Youngest possible first registration \n
+    :param min_mileage: Lowest mileage of an Item \n
+    :param max_mileage: Highest mileage of an Item \n
+    :param fuel_type: Fuel type of the vehicle \n
+    :param location: Location where the Item is located \n
+    :param roadworthy: Roadworthy \n
     :return: Result set matching the query parametes
     """
     if min_price is None and max_price is None and brand is None and model is None and min_first_registration is None \

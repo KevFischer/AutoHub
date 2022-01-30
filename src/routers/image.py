@@ -31,9 +31,9 @@ cloudinary.config(
 @router.get("/{id}",response_model=List[RespondImage])
 def get_images(id:int, db: Session = Depends(init_db)):
     """
-    Get images of an offer
-    :param id: ID of the offer
-    :param db: DB to browse
+    Get images of an offer \n
+    :param id: ID of the offer \n
+    :param db: DB to browse \n
     :return: List of all imageURLs
     """
     if db.query(Offer).filter(Offer.offerID == id).first() is None:
@@ -44,9 +44,9 @@ def get_images(id:int, db: Session = Depends(init_db)):
 @router.get("/thumbnail/{id}")
 def get_images(id: int, db: Session = Depends(init_db)):
     """
-    EXPERIMENTAL
-    :param id: ID of offer
-    :param db: DB to browse
+    EXPERIMENTAL \n
+    :param id: ID of offer \n
+    :param db: DB to browse \n
     :return: Thumbnail
     """
     if db.query(Offer).filter(Offer.offerID == id).first() is None:
@@ -57,11 +57,11 @@ def get_images(id: int, db: Session = Depends(init_db)):
 @router.post("/{id}")
 async def upload_post(id: int, token:str = Header(None), file: UploadFile = File(...), db: Session = Depends(init_db)):
     """
-    Upload an image for an offer
-    :param id: ID of the offer
-    :param token: Token to identify user
-    :param file: File to upload
-    :param db: DB to browse
+    Upload an image for an offer \n
+    :param id: ID of the offer \n
+    :param token: Token to identify user \n
+    :param file: File to upload \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     if read_token(token, db) is None:

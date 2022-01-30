@@ -30,10 +30,10 @@ pusher_client = pusher.Pusher(
 @router.post("/")
 async def push(request: RequestMessage, db: Session = Depends(init_db), token: str = Header(None)):
     """
-    Setup pusher client
-    :param request: Request body of the message
-    :param db: DB to browse
-    :param token: Token to identify user
+    Setup pusher client \n
+    :param request: Request body of the message \n
+    :param db: DB to browse \n
+    :param token: Token to identify user \n
     :return: No respons, due to pusher mechanics
     """
     new_message = Message(
@@ -58,10 +58,10 @@ async def push(request: RequestMessage, db: Session = Depends(init_db), token: s
 @router.get("/", response_model=List[RespondMessage])
 async def setup(receiver: str, db: Session = Depends(init_db), token: str = Header(None)):
     """
-    Get chat history
-    :param receiver: Receiver of the messages
-    :param db: DB to browse
-    :param token: Token to identify user
+    Get chat history \n
+    :param receiver: Receiver of the messages \n
+    :param db: DB to browse \n
+    :param token: Token to identify user \n
     :return: Return List of all messages between 2 persons.
     """
     query_str = "SELECT * FROM message WHERE "\

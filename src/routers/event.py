@@ -15,8 +15,8 @@ router = APIRouter()
 @router.get("/", response_model=List[RespondEvent])
 def get_all(db: Session = Depends(init_db)):
     """
-    Get all events registered in DB
-    :param db: DB do browse with
+    Get all events registered in DB. \n
+    :param db: DB do browse with \n
     :return: All events in DB
     """
     return db.query(Event).all()
@@ -25,9 +25,9 @@ def get_all(db: Session = Depends(init_db)):
 @router.get("/{id}", response_model=RespondEvent)
 def get_by_id(id: int, token:str = Header(None), db: Session = Depends(init_db)):
     """
-    Get a specific event.
-    :param id: Unique ID of the event.
-    :param db: DB to browse
+    Get a specific event. \n
+    :param id: Unique ID of the event \n
+    :param db: DB to browse \n
     :return: Event identified by the ID
     """
     if db.query(Event).filter(Event.eventID == id).first() is None:
@@ -53,10 +53,10 @@ def get_by_id(id: int, token:str = Header(None), db: Session = Depends(init_db))
 @router.post("/")
 def add_event(request: RequestEvent, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Add an event to the DB.
-    :param request: Request body to create event
-    :param token: Token to identify logged in user
-    :param db: DB to browse
+    Add an event to the DB. \n
+    :param request: Request body to create event \n
+    :param token: Token to identify logged in user \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     if read_token(token, db) is None:
@@ -77,10 +77,10 @@ def add_event(request: RequestEvent, token: str = Header(None), db: Session = De
 @router.post("/join/{id}")
 def join_event(id: int, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Enter a specific event identified by unique ID
-    :param id: Unique event ID
-    :param token: Token to identify user, check if logged in
-    :param db: DB to browse
+    Enter a specific event identified by unique ID \n
+    :param id: Unique event ID \n
+    :param token: Token to identify user, check if logged in \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     if db.query(Event).filter(Event.eventID == str(id)).first() is None:
@@ -99,9 +99,9 @@ def join_event(id: int, token: str = Header(None), db: Session = Depends(init_db
 @router.get("/participants/{id}")
 def get_participants(id: int, db: Session = Depends(init_db)):
     """
-    Get joined users of a specific event
-    :param id: Unique ID of event
-    :param db: DB to browse
+    Get joined users of a specific event \n
+    :param id: Unique ID of event \n
+    :param db: DB to browse \n
     :return: List of all joined accounts
     """
     if db.query(Event).filter(Event.eventID == str(id)).first() is None:
@@ -112,11 +112,11 @@ def get_participants(id: int, db: Session = Depends(init_db)):
 @router.delete("/{id}")
 def delete_event(id: int, token: str = Header(None), db: Session = Depends(init_db)):
     """
-    Delete an event.
-    You have to be logged in as the owner of the event for this.
-    :param id: Unique ID of Event
-    :param token: Token to identify user
-    :param db: DB to browse
+    Delete an event. \n
+    You have to be logged in as the owner of the event for this. \n
+    :param id: Unique ID of Event \n
+    :param token: Token to identify user \n
+    :param db: DB to browse \n
     :return: OK if success
     """
     user = read_token(token, db)
