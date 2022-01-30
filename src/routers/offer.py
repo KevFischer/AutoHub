@@ -8,7 +8,6 @@ from src.util.database import init_db
 from src.models.offer import Offer
 from src.schemas.offer import *
 
-
 router = APIRouter()
 
 
@@ -57,7 +56,6 @@ def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)
     return response
 
 
-
 @router.post("/")
 def add_offer(request: RequestOffer, token: str = Header(None), db: Session = Depends(init_db)):
     """
@@ -68,7 +66,7 @@ def add_offer(request: RequestOffer, token: str = Header(None), db: Session = De
     :return: OK if success
     """
     new_offer = Offer(
-        account=read_token(token,db),
+        account=read_token(token, db),
         brand=request.brand,
         model=request.model,
         price=request.price,
@@ -105,10 +103,10 @@ def delete_offer(id: int, token: str = Header(None), db: Session = Depends(init_
 
 
 @router.get("/search/", response_model=List[RespondOffer])
-def search_offer(db: Session = Depends(init_db), min_price: Optional[int] = None, max_price: Optional[int] = None,\
-                 brand: Optional[str] = None, model: Optional[str] = None,\
-                 min_first_registration: Optional[datetime] = None, max_first_registration: Optional[datetime] = None,\
-                 min_mileage: Optional[int] = None, max_mileage: Optional[int] = None, fuel_type: Optional[str] = None,\
+def search_offer(db: Session = Depends(init_db), min_price: Optional[int] = None, max_price: Optional[int] = None, \
+                 brand: Optional[str] = None, model: Optional[str] = None, \
+                 min_first_registration: Optional[datetime] = None, max_first_registration: Optional[datetime] = None, \
+                 min_mileage: Optional[int] = None, max_mileage: Optional[int] = None, fuel_type: Optional[str] = None, \
                  location: Optional[str] = None, roadworthy: Optional[str] = None):
     """
     Generate and execute a search string on a given DB.
@@ -126,6 +124,10 @@ def search_offer(db: Session = Depends(init_db), min_price: Optional[int] = None
     :param roadworthy: Roadworthy
     :return: Result set matching the query parametes
     """
+    if min_price is None and max_price is None and brand is None and model is None and min_first_registration is None \
+            and max_first_registration is None and min_mileage is None and max_mileage is None and fuel_type is None \
+            and location is None and roadworthy is None:
+        return db.query(Offer).all()
     default_str = "SELECT * FROM offer WHERE"
     query_str = default_str
     if min_price is not None:
