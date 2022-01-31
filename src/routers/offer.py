@@ -56,7 +56,7 @@ def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)
     return response
 
 
-@router.post("/")
+@router.post("/", response_model=RespondOffer)
 def add_offer(request: RequestOffer, token: str = Header(None), db: Session = Depends(init_db)):
     """
     Add an offer to database. \n
@@ -81,7 +81,7 @@ def add_offer(request: RequestOffer, token: str = Header(None), db: Session = De
     )
     db.add(new_offer)
     db.commit()
-    return {"response": "ok"}
+    return new_offer
 
 
 @router.delete("/{id}")
