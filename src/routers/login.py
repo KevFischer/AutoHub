@@ -20,9 +20,14 @@ def login(request: RequestLogin, db: Session = Depends(init_db)):
     :param db: Database to interact with \n
     :return: JWT token for user privileges
     """
-    if db.query(Account).filter(Account.email == request.email).\
-            filter(Account.password == encrypt(request.password)) is not None:
-        return RespondLogin(
-            token=generate_token(request.email, db)
-        )
-    raise HTTPException(status_code=422)
+    if request.email == "" or request.password == "":
+        raise HTTPException(status_code=422)
+    if request.email is None or request.password is None:
+        raise HTTPException(status_code=422)
+    if db.query(Account).filter(Account.email == request.email).first() is None:
+        raise HTTPException(status_code=404)
+    if db.query(Account.password).filter(Account.email == request.email).first()[0] != encrypt(request.password):
+        raise HTTPException(status_code=404)
+    return RespondLogin(
+        token=generate_token(request.email, db)
+    )

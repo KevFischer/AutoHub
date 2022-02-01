@@ -2,7 +2,7 @@
 Register route to create new account
 """
 from fastapi import *
-from src.util.password import encrypt
+from src.util.password import encrypt, check_password
 from src.util.database import init_db
 from src.util.token import *
 from src.models.account import Account
@@ -24,6 +24,11 @@ def register(request: RequestRegister, db: Session = Depends(init_db)):
         raise HTTPException(status_code=422)
     # Check if there is already an account registered to the e-mail address.
     if db.query(Account).filter(Account.email == request.email).first() is not None:
+        raise HTTPException(status_code=422)
+    # Check if password is OK
+    if not check_password(request.password):
+        raise HTTPException(status_code=422)
+    if "@" not in request.email:
         raise HTTPException(status_code=422)
     # Create new Account-object with values from the request.
     new_account = Account(
