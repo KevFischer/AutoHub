@@ -50,11 +50,11 @@ def send_mail(request: RequestMessage, db: Session = Depends(init_db), token: st
     """
     sender = read_token(token, db)
     if sender is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="Sender can not be empty.")
     if db.query(Offer).filter(Offer.offerID == request.offer).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Offer not found.")
     if request.content is None:
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=422, detail="Content can not be empty.")
     offer = db.query(Offer).filter(Offer.offerID == request.offer).first()
     receiver = offer.account
     subj = f"{sender} is interested in your {offer.brand} {offer.model}!"

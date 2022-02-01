@@ -31,7 +31,7 @@ def get_by_id(id: int, token:str = Header(None), db: Session = Depends(init_db))
     :return: Event identified by the ID
     """
     if db.query(Event).filter(Event.eventID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Event not found.")
     ownership = False
     data = db.query(Event).filter(Event.eventID == id).first()
     if token is not None:
@@ -62,7 +62,7 @@ def add_event(request: RequestEvent, token: str = Header(None), db: Session = De
     :return: OK if success
     """
     if read_token(token, db) is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You can not create an event as a guest.")
     new_event = Event(
         creator=read_token(token, db),
         eventname=request.eventname,
@@ -86,9 +86,9 @@ def join_event(id: int, token: str = Header(None), db: Session = Depends(init_db
     :return: OK if success
     """
     if db.query(Event).filter(Event.eventID == str(id)).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Event not found.")
     if read_token(token, db) is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You can not join an event as a guest.")
     new_participant = AccountEvent(
         event=id,
         account=read_token(token, db)
@@ -107,7 +107,7 @@ def get_participants(id: int, db: Session = Depends(init_db)):
     :return: List of all joined accounts
     """
     if db.query(Event).filter(Event.eventID == str(id)).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Event not found.")
     return db.execute("select * from account where email in (select account from account_event where event = " + str(id) + ")").fetchall()
 
 
@@ -123,11 +123,11 @@ def delete_event(id: int, token: str = Header(None), db: Session = Depends(init_
     """
     user = read_token(token, db)
     if db.query(Event).filter(Event.eventID == str(id)).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Event not found.")
     if user is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="User can not be resolved by token.")
     if user != db.query(Event.creator).filter(Event.eventID == str(id)).first()[0]:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You are not the owner of the event.")
     db.execute("DELETE FROM account_event WHERE event = " + str(id))
     db.commit()
     db.execute("DELETE FROM event WHERE eventID = " + str(id))

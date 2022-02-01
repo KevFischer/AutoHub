@@ -38,7 +38,7 @@ def get_images(id:int, db: Session = Depends(init_db)):
     :return: List of all imageURLs
     """
     if db.query(Offer).filter(Offer.offerID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Offer not found.")
     return db.query(OfferImages.url).filter(OfferImages.offer == id).all()
 
 
@@ -51,7 +51,7 @@ def get_images(id: int, db: Session = Depends(init_db)):
     :return: Thumbnail
     """
     if db.query(Offer).filter(Offer.offerID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Offer not found.")
     return db.query(OfferImages.url).filter(OfferImages.offer == id).first()
 
 
@@ -66,13 +66,13 @@ async def upload_post(id: int, token: str = Header(None), file: UploadFile = Fil
     :return: OK if success
     """
     if read_token(token, db) is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You can not upload images as a guest.")
     if file.content_type.split("/")[0] != "image":
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=422, detail="Invalid file format.")
     if db.query(Offer).filter(Offer.offerID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Offer not found.")
     if db.query(Offer.account).filter(Offer.offerID == id).first()[0] != read_token(token, db):
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You are not the owner of this post.")
     url = cloudinary.uploader.upload(file.file)["url"]
     new_image = OfferImages(
         offer=id,
@@ -94,9 +94,9 @@ def add_profile_pic(token: str = Header(None), file: UploadFile = File(...), db:
     """
     user = read_token(token, db)
     if user is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="User can not be resolved by token.")
     if file.content_type.split("/")[0] != "image":
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=422, detail="Invalid file format.")
     url = cloudinary.uploader.upload(file.file)["url"]
     db.execute("UPDATE account SET image_url = '" + url + "' WHERE email LIKE '" + user + "'")
     db.commit()

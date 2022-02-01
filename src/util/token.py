@@ -5,10 +5,8 @@ import jwt
 import json
 from sqlalchemy.orm.session import Session
 from random import random
-from fastapi import HTTPException
 from datetime import datetime, timedelta
 from src.models.token import Token
-from src.models.account import Account
 
 
 CONFIG = "cfg/token.json"

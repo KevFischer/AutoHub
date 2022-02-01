@@ -31,7 +31,7 @@ def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)
     :return: Offer object if matching
     """
     if db.query(Offer).filter(Offer.offerID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Offer not found.")
     ownership = False
     data = db.query(Offer).filter(Offer.offerID == id).first()
     if token is not None:
@@ -66,7 +66,7 @@ def add_offer(request: RequestOffer, token: str = Header(None), db: Session = De
     :return: OK if success
     """
     if request.roadworthy.lower() != "fahrtauglich" and request.roadworthy.lower() != "nicht fahrtauglich":
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=422, detail="Roadworthy must be 'Fahrtauglich' or 'Nicht Fahrtauglich'.")
     new_offer = Offer(
         account=read_token(token, db),
         brand=request.brand,
@@ -94,9 +94,9 @@ def delete_offer(id: int, token: str = Header(None), db: Session = Depends(init_
     :return: OK if success
     """
     if db.query(Offer).filter(Offer.offerID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Offer not found.")
     if db.query(Offer).filter(Offer.offerID == id).first().account != read_token(token, db):
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You are not the owner of this offer.")
     db.execute("DELETE FROM message WHERE offer = " + str(id))
     db.commit()
     db.execute("DELETE FROM offer WHERE offerID = " + str(id))

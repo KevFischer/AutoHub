@@ -35,7 +35,7 @@ def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)
     :return: Matching forumpost object
     """
     if db.query(Forumpost).filter(Forumpost.postID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Post not found.")
     ownership = False
     data = db.query(Forumpost).filter(Forumpost.postID == id).first()
     if token is not None:
@@ -63,7 +63,7 @@ def add_post(request: RequestPost, token: str = Header(None), db: Session = Depe
     :return: OK if success
     """
     if read_token(token, db) is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="User can not be resolved by token.")
     new_post = Forumpost(
         account=read_token(token, db),
         topic=request.topic,
@@ -84,11 +84,11 @@ def delete_post(id:int, token:str = Header(None), db: Session = Depends(init_db)
     :return: OK if success
     """
     if read_token(token, db) is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="User can not be resolved by token.")
     if db.query(Forumpost).filter(Forumpost.postID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Post not found.")
     if db.query(Forumpost.account).filter(Forumpost.postID == id).first()[0] != read_token(token, db):
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You are not the owner of this post.")
     db.execute("DELETE FROM forumpostanswer WHERE post = " + str(id))
     db.commit()
     db.execute("DELETE FROM forumpost WHERE postID = " + str(id))
@@ -105,7 +105,7 @@ def get_answers(id: int, db: Session = Depends(init_db)):
     :return: List of Answers
     """
     if db.query(Forumpost).filter(Forumpost.postID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Post not found.")
     return db.query(Forumpostanswer).filter(Forumpostanswer.post == id).all()
 
 
@@ -120,9 +120,9 @@ def answer_post(request: RequestAnswer, id: int, token: str = Header(None), db: 
     :return: OK if success
     """
     if read_token(token, db) is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You can not answer a post as a guest.")
     if db.query(Forumpost).filter(Forumpost.postID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Post not found.")
     new_answer = Forumpostanswer(
         post=id,
         account=read_token(token, db),
@@ -143,9 +143,9 @@ def upvote_answer(id:int, token: str = Header(None), db: Session = Depends(init_
     :return: OK if success
     """
     if read_token(token, db) is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You can not upvote answers as a guest")
     if db.query(Forumpostanswer).filter(Forumpostanswer.answerID == id).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Answer not found.")
     db.execute("UPDATE forumpostanswer SET upvotes = upvotes + 1 WHERE answerID = " + str(id))
     db.commit()
     return {"response": "ok"}
@@ -161,9 +161,9 @@ def delete_answer(id: int, token: str = Header(None), db: Session = Depends(init
     :return: OK if success
     """
     if read_token(token, db) is None:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You can not delete messages as a guest.")
     if db.query(Forumpostanswer.account).filter(Forumpostanswer.answerID == id).first()[0] != read_token(token, db):
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail="You are not the owner of the answer.")
     db.execute("DELETE FROM forumpostanswer WHERE answerID = " + str(id))
     db.commit()
     return {"response": "ok"}

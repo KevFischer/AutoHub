@@ -21,16 +21,16 @@ def register(request: RequestRegister, db: Session = Depends(init_db)):
     """
     # Check if mandatory columns are available.
     if request.username and request.password and request.email is None:
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=422, detail="Username, password and email can not be empty.")
     # Check if there is already an account registered to the e-mail address.
     if db.query(Account).filter(Account.email == request.email).first() is not None:
-        raise HTTPException(status_code=409)
+        raise HTTPException(status_code=409, detail="E-Mail already in use.")
     # Check if password is OK
     if not check_password(request.password):
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=422, detail="Password does not match password policy.")
     # Check if email is an email.
     if "@" not in request.email:
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=422, detail="Invalid E-Mail adress.")
     # Create new Account-object with values from the request.
     new_account = Account(
         username=request.username,

@@ -21,13 +21,13 @@ def login(request: RequestLogin, db: Session = Depends(init_db)):
     :return: JWT token for user privileges
     """
     if request.email == "" or request.password == "":
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=422, detail="Credentials can not be empty.")
     if request.email is None or request.password is None:
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=422, detail="Credentials can not be empty.")
     if db.query(Account).filter(Account.email == request.email).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Invalid login credentials.")
     if db.query(Account.password).filter(Account.email == request.email).first()[0] != encrypt(request.password):
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Invalid login credentials.")
     return RespondLogin(
         token=generate_token(request.email, db)
     )

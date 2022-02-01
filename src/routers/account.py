@@ -36,7 +36,7 @@ def get_by_id(email: str, db: Session = Depends(init_db)):
     :return: Account matching to email
     """
     if db.query(Account).filter(Account.email == email).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Account not found.")
     return db.query(Account).filter(Account.email == email).first()
 
 
@@ -49,7 +49,7 @@ def get_forum_posts(email: str, db: Session = Depends(init_db)):
     :return: List of all posts of the user
     """
     if db.query(Account).filter(Account.email == email).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Account not found.")
     return db.query(Forumpost).filter(Forumpost.account == email).all()
 
 
@@ -62,7 +62,7 @@ def get_offers(email: str, db: Session = Depends(init_db)):
     :return: List of all offers of the user
     """
     if db.query(Account).filter(Account.email == email).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Account not found.")
     return db.query(Offer).filter(Offer.account == email).all()
 
 
@@ -75,5 +75,5 @@ def get_events(email: str, db: Session = Depends(init_db)):
     :return: List of all events of the user
     """
     if db.query(Account).filter(Account.email == email).first() is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Account not found.")
     return db.query(Event).filter(Event.creator == email).all()
