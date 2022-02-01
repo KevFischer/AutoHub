@@ -30,7 +30,7 @@ cloudinary.config(
 
 
 @router.get("/{id}",response_model=List[RespondImage])
-def get_images(id:int, db: Session = Depends(init_db)):
+def get_images(id: int, db: Session = Depends(init_db)):
     """
     Get images of an offer \n
     :param id: ID of the offer \n
