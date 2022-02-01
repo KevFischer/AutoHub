@@ -45,7 +45,8 @@ def get_by_id(id: int, token:str = Header(None), db: Session = Depends(init_db))
     location=data.location,
     appointment=data.appointment,
     maxAttendants=data.maxAttendants,
-    ownership=ownership
+    ownership=ownership,
+    description=data.description
     )
     return response
 

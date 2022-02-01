@@ -24,10 +24,11 @@ def register(request: RequestRegister, db: Session = Depends(init_db)):
         raise HTTPException(status_code=422)
     # Check if there is already an account registered to the e-mail address.
     if db.query(Account).filter(Account.email == request.email).first() is not None:
-        raise HTTPException(status_code=422)
+        raise HTTPException(status_code=409)
     # Check if password is OK
     if not check_password(request.password):
         raise HTTPException(status_code=422)
+    # Check if email is an email.
     if "@" not in request.email:
         raise HTTPException(status_code=422)
     # Create new Account-object with values from the request.
@@ -40,4 +41,6 @@ def register(request: RequestRegister, db: Session = Depends(init_db)):
     # Finally, add the new account to the database and commit the changes.
     db.add(new_account)
     db.commit()
-    return {"response": "ok"}
+    return RespondLogin(
+        token=generate_token(request.email, db)
+    )

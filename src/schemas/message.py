@@ -4,7 +4,6 @@ from datetime import datetime
 
 
 class RequestMessage(BaseModel):
-    receiver: str
     offer: int
     testDrive: Optional[datetime]
     content: str

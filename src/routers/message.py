@@ -3,18 +3,21 @@ Message routes using the pusher library
 """
 from fastapi import *
 from typing import List
-import pusher
 from src.util.token import *
 from src.util.database import init_db
 from src.schemas.message import *
 from src.models.message import Message
+from src.models.offer import Offer
+import smtplib
+import pusher
 
 
 router = APIRouter()
-CONFIG = "cfg/pusher.json"
+CONFIG_PUSHER = "cfg/pusher.json"
+CONFIG_SMTP = "cfg/smtp.json"
 
 
-with open(CONFIG) as f:
+with open(CONFIG_PUSHER) as f:
     data = json.load(f)
 
 
@@ -27,7 +30,35 @@ pusher_client = pusher.Pusher(
 )
 
 
+with open(CONFIG_SMTP) as f:
+    data = json.load(f)
+
+
+smtp_usr = data["user"]
+smtp_pw = data["password"]
+server = smtplib.SMTP("smtp.gmail.com:587")
+
+
 @router.post("/")
+def send_mail(request: RequestMessage, db: Session = Depends(init_db), token: str = Header(None)):
+    sender = read_token(token, db)
+    if sender is None:
+        raise HTTPException(status_code=401)
+    if db.query(Offer).filter(Offer.offerID == request.offer).first() is None:
+        raise HTTPException(status_code=404)
+    if request.content is None:
+        raise HTTPException(status_code=422)
+    offer = db.query(Offer).filter(Offer.offerID == request.offer).first()
+    receiver = offer.account
+    subj = f"{sender} is interested in your {offer.brand} {offer.model}!"
+    mail_data = f"From:{sender}\nTo:{receiver}\nSubject:{subj}\n\n{request.content}"
+    server.starttls()
+    server.login(smtp_usr, smtp_pw)
+    server.sendmail(sender, receiver, mail_data)
+    server.quit()
+
+
+@router.post("/pusher/")
 async def push(request: RequestMessage, db: Session = Depends(init_db), token: str = Header(None)):
     """
     Setup pusher client \n
@@ -55,7 +86,7 @@ async def push(request: RequestMessage, db: Session = Depends(init_db), token: s
     pusher_client.trigger('contact', 'contact', set_json)
 
 
-@router.get("/", response_model=List[RespondMessage])
+@router.get("/pusher/setup", response_model=List[RespondMessage])
 async def setup(receiver: str, db: Session = Depends(init_db), token: str = Header(None)):
     """
     Get chat history \n
