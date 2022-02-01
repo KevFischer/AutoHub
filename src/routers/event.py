@@ -39,15 +39,16 @@ def get_by_id(id: int, token:str = Header(None), db: Session = Depends(init_db))
         if data.creator == user:
             ownership = True
     response = RespondEvent(
-    eventID=data.eventID,
-    creator=data.creator,
-    eventname=data.eventname,
-    location=data.location,
-    appointment=data.appointment,
-    maxAttendants=data.maxAttendants,
-    ownership=ownership,
-    description=data.description
+        eventID=data.eventID,
+        creator=data.creator,
+        eventname=data.eventname,
+        location=data.location,
+        appointment=data.appointment,
+        maxAttendants=data.maxAttendants,
+        ownership=ownership,
+        description=data.description
     )
+
     return response
 
 
@@ -107,7 +108,7 @@ def get_participants(id: int, db: Session = Depends(init_db)):
     """
     if db.query(Event).filter(Event.eventID == str(id)).first() is None:
         raise HTTPException(status_code=404)
-    return db.execute("select * from account where email in (select email from account_event where event = " + str(id) + ")").fetchall()
+    return db.execute("select * from account where email in (select account from account_event where event = " + str(id) + ")").fetchall()
 
 
 @router.delete("/{id}")

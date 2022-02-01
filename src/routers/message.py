@@ -41,6 +41,13 @@ server = smtplib.SMTP("smtp.gmail.com:587")
 
 @router.post("/")
 def send_mail(request: RequestMessage, db: Session = Depends(init_db), token: str = Header(None)):
+    """
+    Send email to offer creator. \n
+    :param request: Request body for email \n
+    :param db: DB to browse \n
+    :param token: Token to identify sender \n
+    :return: OK if success
+    """
     sender = read_token(token, db)
     if sender is None:
         raise HTTPException(status_code=401)
@@ -56,6 +63,9 @@ def send_mail(request: RequestMessage, db: Session = Depends(init_db), token: st
     server.login(smtp_usr, smtp_pw)
     server.sendmail(sender, receiver, mail_data)
     server.quit()
+    return {
+        "response": "ok"
+    }
 
 
 @router.post("/pusher/")
