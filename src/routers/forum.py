@@ -70,7 +70,7 @@ def get_by_id(id: int, token: str = Header(None), db: Session = Depends(init_db)
     return response
 
 
-@router.post("/")
+@router.post("/",response_model=RespondPost)
 def add_post(request: RequestPost, token: str = Header(None), db: Session = Depends(init_db)):
     """
     Add a post to the DB \n
@@ -88,7 +88,7 @@ def add_post(request: RequestPost, token: str = Header(None), db: Session = Depe
     )
     db.add(new_post)
     db.commit()
-    return {"response": "ok"}
+    return new_post
 
 
 @router.delete("/{id}")
@@ -157,7 +157,7 @@ def answer_post(request: RequestAnswer, id: int, token: str = Header(None), db: 
 
 
 @router.patch("/answer/upvote/{id}")
-def upvote_answer(id:int, token: str = Header(None), db: Session = Depends(init_db)):
+def upvote_answer(id: int, token: str = Header(None), db: Session = Depends(init_db)):
     """
     Increment upvote column of ForumPostAnswer \n
     :param id: ID of the answer \n

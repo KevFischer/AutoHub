@@ -57,7 +57,7 @@ def get_by_id(id: int, token:str = Header(None), db: Session = Depends(init_db))
     return response
 
 
-@router.post("/")
+@router.post("/", response_model=RespondEvent)
 def add_event(request: RequestEvent, token: str = Header(None), db: Session = Depends(init_db)):
     """
     Add an event to the DB. \n
@@ -78,7 +78,7 @@ def add_event(request: RequestEvent, token: str = Header(None), db: Session = De
     )
     db.add(new_event)
     db.commit()
-    return {"response": "ok"}
+    return new_event
 
 
 @router.post("/join/{id}")
