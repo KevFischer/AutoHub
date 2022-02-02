@@ -103,6 +103,22 @@ def join_event(id: int, token: str = Header(None), db: Session = Depends(init_db
     return {"response": "ok"}
 
 
+@router.delete("/{id}/leave")
+def leave_event(id: int, token: str = Header(None), db: Session = Depends(init_db)):
+    if db.query(Event).filter(Event.eventID == str(id)).first() is None:
+        raise HTTPException(status_code=404, detail="Event not found.")
+    user = read_token(token, db)
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not authorized.")
+    if db.query(AccountEvent).filter(AccountEvent.event == id).filter(AccountEvent.account == user).first() is None:
+        raise HTTPException(status_code=404, detail="User did not join.")
+    db.execute("DELETE FROM account_event WHERE event = " + str(id) + " AND account LIKE '" + user + "'")
+    db.commit()
+    return {
+        "response": "ok"
+    }
+
+
 @router.get("/participants/{id}")
 def get_participants(id: int, db: Session = Depends(init_db)):
     """
