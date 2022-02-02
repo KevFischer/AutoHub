@@ -110,7 +110,7 @@ def join_event(id: int, token: str = Header(None), db: Session = Depends(init_db
     return {"response": "ok"}
 
 
-@router.delete("/{id}/leave")
+@router.delete("/leave/{id}")
 def leave_event(id: int, token: str = Header(None), db: Session = Depends(init_db)):
     if db.query(Event).filter(Event.eventID == str(id)).first() is None:
         raise HTTPException(status_code=404, detail="Event not found.")
