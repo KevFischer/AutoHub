@@ -10,9 +10,26 @@ from src.models.forumpost import Forumpost
 from src.models.forumanswer import Forumpostanswer
 from src.schemas.forumpost import *
 from src.schemas.forumanswer import *
+import pusher
 
 
 router = APIRouter()
+
+
+CONFIG_PUSHER = "cfg/pusher.json"
+
+
+with open(CONFIG_PUSHER) as f:
+    data = json.load(f)
+
+
+pusher_client = pusher.Pusher(
+  app_id=data["app_id"],
+  key=data["key"],
+  secret=data["secret"],
+  cluster=data["cluster"],
+  ssl=bool(data["ssl"])
+)
 
 
 @router.get("/", response_model=List[RespondPost])
@@ -130,6 +147,12 @@ def answer_post(request: RequestAnswer, id: int, token: str = Header(None), db: 
     )
     db.add(new_answer)
     db.commit()
+    answer_json = {
+        "post": new_answer.post,
+        "account": read_token(token, db),
+        "content": new_answer.content
+    }
+    pusher_client.trigger('forum', 'forum', answer_json)
     return {"response": "ok"}
 
 
