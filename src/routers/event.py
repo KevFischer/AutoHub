@@ -159,3 +159,18 @@ def search_event(search_str: Optional[str] = None, location: Optional[str] = Non
         query_str += f" (location LIKE '%{location}%')"
     query_str += ";"
     return db.execute(query_str).all()
+
+
+@router.get("/{id}/joined")
+def is_joined(id: int, token: str = Header(None), db: Session = Depends(init_db)):
+    if db.query(Event).filter(Event.eventID == id).first() is None:
+        raise HTTPException(status_code=404, detail="Event not found.")
+    user = read_token(token, db)
+    response = False
+    if user is None:
+        raise HTTPException(status_code=401, detail="You have to be logged in to do that.")
+    if db.query(AccountEvent).filter(AccountEvent.event == id).filter(AccountEvent.account == user).first() is not None:
+        response = True
+    return {
+        "joined": response
+    }

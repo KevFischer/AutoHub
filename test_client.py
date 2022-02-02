@@ -58,6 +58,3 @@ def test_images():
 def test_offer_id():
     response = client.delete("/offer/99999999")
     assert response.status_code == 404
-
-
-

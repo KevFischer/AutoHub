@@ -99,6 +99,8 @@ def delete_offer(id: int, token: str = Header(None), db: Session = Depends(init_
         raise HTTPException(status_code=401, detail="You are not the owner of this offer.")
     db.execute("DELETE FROM message WHERE offer = " + str(id))
     db.commit()
+    db.execute("DELETE FROM offer_images WHERE offer = " + str(id))
+    db.commit()
     db.execute("DELETE FROM offer WHERE offerID = " + str(id))
     db.commit()
     return {"response": "ok"}
