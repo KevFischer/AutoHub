@@ -33,11 +33,15 @@ def get_by_id(id: int, token:str = Header(None), db: Session = Depends(init_db))
     if db.query(Event).filter(Event.eventID == id).first() is None:
         raise HTTPException(status_code=404, detail="Event not found.")
     ownership = False
+    joined = False
     data = db.query(Event).filter(Event.eventID == id).first()
     if token is not None:
         user = read_token(token, db)
-        if data.creator == user:
-            ownership = True
+        if user is not None:
+            if data.creator == user:
+                ownership = True
+            if db.query(AccountEvent).filter(AccountEvent.event == id).filter(AccountEvent.account == user).first() is not None:
+                joined = True
     response = RespondEvent(
         eventID=data.eventID,
         creator=data.creator,
@@ -46,7 +50,8 @@ def get_by_id(id: int, token:str = Header(None), db: Session = Depends(init_db))
         appointment=data.appointment,
         maxAttendants=data.maxAttendants,
         ownership=ownership,
-        description=data.description
+        description=data.description,
+        joined=joined
     )
 
     return response

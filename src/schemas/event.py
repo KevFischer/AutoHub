@@ -23,6 +23,7 @@ class RespondEvent(BaseModel):
     maxAttendants: Optional[int]
     description: Optional[str]
     ownership: Optional[bool]
+    joined: Optional[bool]
 
     class Config:
         orm_mode = True
