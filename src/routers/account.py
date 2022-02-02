@@ -77,3 +77,14 @@ def get_events(email: str, db: Session = Depends(init_db)):
     if db.query(Account).filter(Account.email == email).first() is None:
         raise HTTPException(status_code=404, detail="Account not found.")
     return db.query(Event).filter(Event.creator == email).all()
+
+
+@router.delete("/{email}/delete")
+def delete_account(email: str, db: Session = Depends(init_db)):
+    if db.query(Account).filter(Account.email == email).first() is None:
+        raise HTTPException(status_code=404, detail="Account not found")
+    db.execute(f"DELETE FROM account WHERE email LIKE '{email}'")
+    db.commit()
+    return {
+        "response": "ok"
+    }

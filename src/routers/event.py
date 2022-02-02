@@ -94,6 +94,13 @@ def join_event(id: int, token: str = Header(None), db: Session = Depends(init_db
         raise HTTPException(status_code=404, detail="Event not found.")
     if read_token(token, db) is None:
         raise HTTPException(status_code=401, detail="You can not join an event as a guest.")
+    if db.query(AccountEvent).filter(AccountEvent.event == id).filter(AccountEvent.account == read_token(token, db))\
+            .first() is not None:
+        raise HTTPException(status_code=403, detail="Already joined.")
+    if db.query(Event.maxAttendants).filter(Event.eventID == id).first()[0] is not None:
+        if db.execute(f"SELECT count(*) AS cur FROM account_event WHERE event = '{id}'").first()[0] >= \
+                db.query(Event.maxAttendants).filter(Event.eventID == id).first()[0]:
+            raise HTTPException(status_code=403, detail="Max Attendants reached for this event")
     new_participant = AccountEvent(
         event=id,
         account=read_token(token, db)

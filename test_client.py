@@ -2,59 +2,36 @@ from fastapi.testclient import TestClient
 from main import app
 
 
-client = TestClient(app)
+client = TestClient(app, raise_server_exceptions=False)
+usr = "TestClientUser"
+email = "Test@Client.mail"
+phone = "123456789"
+pw = "T3$Tcl1enT"
 
 
-def test_account_id():
-    response = client.get("/account/99999999")
-    assert response.status_code == 404
+def test_prepare():
+    """
+    Delete existing datasets used by tests.
+    """
+    response = client.delete(url=f"account/{email}/delete")
+    assert response.status_code == 200
 
 
-def test_account_posts():
-    response = client.get("/unrealisticemail/posts")
-    assert response.status_code == 404
-
-
-def test_account_offers():
-    response = client.get("/unrealisticemail/offers")
-    assert response.status_code == 404
-
-
-def test_account_events():
-    response = client.get("/unrealisticemail/events")
-    assert response.status_code == 404
-
-
-def test_event_id():
-    response = client.get("/event/participants/99999999")
-    assert response.status_code == 404
-
-
-def test_participants():
-    response = client.get("/event/99999999")
-    assert response.status_code == 404
-
-
-def test_delete_event():
-    response = client.delete("/event/99999999")
-    assert response.status_code == 404
-
-
-def test_forum_id():
-    response = client.get("/forum/99999999")
-    assert response.status_code == 404
-
-
-def test_answers():
-    response = client.get("/forum/answers/99999999")
-    assert response.status_code == 404
-
-
-def test_images():
-    response = client.get("/images/99999999")
-    assert response.status_code == 404
-
-
-def test_offer_id():
-    response = client.delete("/offer/99999999")
-    assert response.status_code == 404
+def test_account():
+    """
+    Test the Account Use-Case
+    by registering and logging in
+    after registering.
+    """
+    response = client.post(url="/register/", json={
+        "username": usr,
+        "email": email,
+        "phone": phone,
+        "password": pw
+    })
+    assert response.status_code == 200
+    response = client.post(url="/login/", json={
+        "email": email,
+        "password": pw
+    })
+    assert response.status_code == 200
