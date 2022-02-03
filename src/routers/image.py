@@ -43,7 +43,7 @@ def get_images(id: int, db: Session = Depends(init_db)):
 
 
 @router.get("/thumbnail/{id}")
-def get_images(id: int, db: Session = Depends(init_db)):
+def get_th_images(id: int, db: Session = Depends(init_db)):
     """
     EXPERIMENTAL \n
     :param id: ID of offer \n

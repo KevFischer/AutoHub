@@ -17,5 +17,7 @@ def logout(token: str = Header(None), db: Session = Depends(init_db)):
     :param db: DB to browse \n
     :return: OK if success
     """
+    if token is None:
+        raise HTTPException(status_code=401, detail="No Token to log out.")
     delete_token(token, db)
     return {"response": "ok"}

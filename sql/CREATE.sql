@@ -12,6 +12,8 @@ ALTER TABLE `autohub`.`account`
 ADD COLUMN `image_url` VARCHAR(512) NULL AFTER `member_since`;
 ALTER TABLE `autohub`.`account` 
 CHANGE COLUMN `image_url` `image_url` VARCHAR(512) NULL DEFAULT 'https://res.cloudinary.com/autohubstorage/image/upload/v1643560393/blank-profile-picture-973460_960_720_dmzcen.webp' ;
+ALTER TABLE `autohub`.`account`
+CHANGE COLUMN `username` `username` VARCHAR(32) NOT NULL ;
 
 
 CREATE TABLE `offer` (
